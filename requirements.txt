@@ -1,0 +1,10 @@
+transformers
+tensorflow
+streamlit
+flask
+fastapi
+uvicorn
+scikit-learn
+pandas
+numpy
+nltk

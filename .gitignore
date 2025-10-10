@@ -1,0 +1,10 @@
+
+model/
+models/
+*.bin
+*.pt
+*.safetensors
+*.h5
+*.ckpt
+venv/
+__pycache__/

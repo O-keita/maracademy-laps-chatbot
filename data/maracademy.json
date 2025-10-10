@@ -1,0 +1,164 @@
+{
+  "intents": [
+    {
+      "tag": "greet",
+      "patterns": [
+        "Hi",
+        "Hello",
+        "Hey",
+        "Good morning",
+        "Good evening"
+      ],
+      "responses": [
+        "Hello! Welcome to MarAcademy. How can I help you today?",
+        "Hi there! I’m here to help you learn about MarAcademy and its courses."
+      ]
+    },
+    {
+      "tag": "about_maracademy",
+      "patterns": [
+        "What is MarAcademy?",
+        "Tell me about MarAcademy",
+        "Who are you guys?",
+        "What do you do at MarAcademy?"
+      ],
+      "responses": [
+        "MarAcademy is an education platform committed to making high-quality tech education accessible to everyone. We offer expertly designed courses, mentorship, fully-funded scholarships, and support to help learners gain industry-ready skills.",
+        "We bridge the gap between ambition and opportunity with courses, mentorship, scholarships, and career resources for learners from all backgrounds."
+      ]
+    },
+    {
+      "tag": "founder_info",
+      "patterns": [
+        "Who founded MarAcademy?",
+        "Tell me about Omar Keita",
+        "Who is the founder?"
+      ],
+      "responses": [
+        "The founder and Executive Director of MarAcademy is Omar Keita. He is a student and web developer from The Gambia, deeply passionate about technology, education, and helping learners succeed. He leads the vision, strategy, and growth of MarAcademy, ensuring access, quality, and mentorship in everything we do.",
+        "Omar Keita, Founder of MarAcademy, is a Gambian student and web developer who loves coding, reading, and learning. Under his leadership, MarAcademy provides free/fully-funded tech courses, mentorship, and strives to eliminate financial barriers to education."
+      ]
+    },
+    {
+      "tag": "personal_background",
+      "patterns": [
+        "Tell me more about Omar Keita",
+        "What is Omar's background?",
+        "Who is Omar outside MarAcademy?"
+      ],
+      "responses": [
+        "Omar Keita is from The Gambia. He is a web developer and student, who enjoys reading, coding, and technology generally. His motivation is to use tech and education to empower learners. He founded MarAcademy to make quality tech education accessible.",
+        "Outside of MarAcademy, Omar is a learner himself — studying, coding, reading, and passionate about closing opportunity gaps. He combines his technical skills and empathy for learners to guide the programs at MarAcademy."
+      ]
+    },
+    {
+      "tag": "mission_vision",
+      "patterns": [
+        "What is your mission?",
+        "What is MarAcademy’s vision?",
+        "Tell me your mission and vision"
+      ],
+      "responses": [
+        "Our mission: to empower learners by providing expertly crafted courses, hands-on mentorship, and fully-funded scholarships so financial barriers don’t limit access to quality education.\n\nOur vision: a world where high-quality education is accessible to everyone, regardless of background, enabling learners to transform their lives through knowledge."
+      ]
+    },
+    {
+      "tag": "what_we_offer",
+      "patterns": [
+        "What do you offer?",
+        "Courses and services",
+        "What can I get from MarAcademy?",
+        "Tell me what you offer"
+      ],
+      "responses": [
+        "Here’s what we offer at MarAcademy:\n\n• Expert Courses (industry-driven, real-world skills)  \n• Hands-On Learning (interactive projects and exercises)  \n• Fully-Funded Scholarships  \n• Mentorship & Support  \n• Career Resources (resume help, interview prep)  \n• Collaborative Community  \n• Flexible Learning (self-paced courses)"
+      ]
+    },
+    {
+      "tag": "courses_list",
+      "patterns": [
+        "What courses do you have?",
+        "Show me your courses",
+        "Which courses are available?",
+        "Tell me courses"
+      ],
+      "responses": [
+        "Here are some of our featured courses:\n\n• Data Science with Python / R  \n• Data Analysis with SQL / Python  \n• Machine Learning with Python  \n• Data Engineering with Python  \n\nYou can see more on DataCamp via our partnership."
+      ]
+    },
+    {
+      "tag": "contact_info",
+      "patterns": [
+        "How can I contact you?",
+        "Your email and phone",
+        "Contact MarAcademy",
+        "Get in touch"
+      ],
+      "responses": [
+        "You can reach us via phone or email:\n\nPhone: +220 3020789  \nEmail: maracademygambia@gmail.com\n\nFeel free to message us with any questions!"
+      ]
+    },
+    {
+      "tag": "apply_now",
+      "patterns": [
+        "How do I apply?",
+        "Apply now",
+        "I want to join",
+        "Application process"
+      ],
+      "responses": [
+        "To apply, please visit our website and click on Apply Now. We provide fully-funded scholarships to eligible learners. Let me know if you want the link or guidance through the application."
+      ]
+    },
+    {
+      "tag": "partners",
+      "patterns": [
+        "Who are your partners?",
+        "Partner organizations",
+        "Who do you work with?"
+      ],
+      "responses": [
+        "One of our key partners is DataCamp, through which we offer course content and collaboration. We also partner with initiatives like DataCamp Donates to expand access."
+      ]
+    },
+    {
+      "tag": "default_fallback",
+      "patterns": [],
+      "responses": [
+        "Sorry, I didn’t quite understand. Could you rephrase that?",
+        "I’m not sure I got that. How can I help you with MarAcademy or our courses?"
+      ]
+    },
+
+
+    {
+  "tag": "about_me",
+  "patterns": [
+    "Tell me about you",
+    "Who is Omar Keita?",
+    "What is your background?",
+    "Who is the founder of MarAcademy?",
+    "What are your skills?",
+    "Show me Omar Keita's profile",
+    "What does Omar do?",
+    "What is Omar's education?",
+    "What is Omar Keita's experience?",
+    "What projects has Omar done?",
+    "What are Omar's interests?"
+  ],
+  "responses": [
+    "Omar Keita is a student at African Leadership University (ALU) in Kigali, Rwanda, majoring in Software Engineering (Bachelor of Science Honours), starting in May 2023. He is from The Gambia.",
+    "Omar is the founder of MarAcademy, a learning initiative that offers free coding courses, mentorship, and fully-funded scholarships.",
+    "He is a Machine Learning Intern at Assutech Limited since September 2024.",
+    "Omar works with Python, Machine Learning, Data Science, Web Development, and Web Hosting. His portfolio includes projects like Real Estate Price Prediction, Predictive Maintenance System, Smart Waste Management Project, and a chatbot ('Mina ChatBot') developed using NLP/ML methods.",
+    "He uses technologies like Pandas, Matplotlib, Seaborn, PyTorch, and XGBoost.",
+    "Omar enjoys reading, coding, and has a passion for education and technology. He is committed to lifelong learning and personal development, and cares deeply about creating impact through solutions and helping others.",
+    "He is a DataCamp student with a portfolio of completed courses and has experience with DataLabProject works such as data analysis and modeling.",
+    "You can learn more at omarkeita.me."
+  ]
+}
+
+
+
+  ]
+}
