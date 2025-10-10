@@ -20,18 +20,9 @@ app = Flask(__name__)
 #===============================================================
 # load model and ask the bot
 #===============================================================
-from transformers import AutoModel, AutoTokenizer
+model = AutoModelForCausalLM.from_pretrained("Omar-keita/gpt2-finetuned-maracademy")
+tokenizer = AutoTokenizer.from_pretrained("Omar-keita/gpt2-finetuned-maracademy")
 
-from transformers import AutoModelForCausalLM, AutoTokenizer
-
-model = AutoModelForCausalLM.from_pretrained(
-    "Omar-keita/maracademy-computer-science",
-    subfolder="gpt2-finetuned-maracademy"
-)
-tokenizer = AutoTokenizer.from_pretrained(
-    "Omar-keita/maracademy-computer-science",
-    subfolder="gpt2-finetuned-maracademy"
-)
 def ask_bot(question, max_length=60):
     prompt = f"User: {question}\nBot:"
     input_ids = tokenizer.encode(prompt, return_tensors="pt")
@@ -79,4 +70,4 @@ def chat():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=9000, host='0.0.0.0')
