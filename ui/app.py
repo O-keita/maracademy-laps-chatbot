@@ -48,7 +48,7 @@ def ask_bot(question, max_length=60):
 
 
 
-@app.route('/')
+@app.route('/omar/own/chatbot/')
 def home():
     return render_template('index.html')
 
