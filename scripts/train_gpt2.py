@@ -22,7 +22,7 @@ data_collator = DataCollatorForLanguageModeling(
 
 training_args = TrainingArguments(
     output_dir=gpt2_finetuned_maracademy,
-    num_train_epochs=10,
+    num_train_epochs=20,
     per_device_train_batch_size=2,
     save_steps=500,
     logging_steps=100,
