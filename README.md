@@ -112,10 +112,10 @@ All steps are commented in `scripts/preprocess.py` and summarized in `preprocess
 - **Model Card:**  
   [Omar-keita/gpt2-finetuned-maracademy on Hugging Face](https://huggingface.co/Omar-keita/gpt2-finetuned-maracademy)
 - **API Endpoint:**  
-  [https://api.ngaagenticflow.agency/omar/own/chatbot/](https://api.ngaagenticflow.agency/omar/own/chatbot/)
+  [https://api.ngaagenticflow.agency/omar/own/chatbot/api/chat](https://api.ngaagenticflow.agency/omar/own/chatbot/api/chat)
 - **Usage Example:**
   ```bash
-  curl -X POST "https://api.ngaagenticflow.agency/omar/own/chatbot/" \
+  curl -X POST "https://api.ngaagenticflow.agency/omar/own/chatbot/api/chat" \
     -H "Content-Type: application/json" \
     -d '{"inputs": "What scholarships does MarAcademy offer?"}'
   ```
@@ -140,7 +140,7 @@ python scripts/preprocess.py
 python scripts/train_gpt2.py
 python -m flask run
 # Then visit the HTML UI in your browser, or use API:
-curl -X POST "https://api.ngaagenticflow.agency/omar/own/chatbot/" \
+curl -X POST "https://api.ngaagenticflow.agency/omar/own/chatbot/api/chat" \
   -H "Content-Type: application/json" \
   -d '{"inputs": "Tell me about MarAcademy mentorship."}'
 ```
