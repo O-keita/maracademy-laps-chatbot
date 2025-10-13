@@ -89,6 +89,8 @@ All steps are commented in `scripts/preprocess.py` and summarized in `preprocess
 
 ## User Interface (UI) Integration
 
+- **Demo UI:** [Live Chatbot UI](https://api.ngaagenticflow.agency/omar/own/chatbot/)  
+  (HTML/Tailwind frontend powered by Flask backend)
 - **Frontend:** HTML/Tailwind CSS, interactive and mobile-friendly (`ui/templates/index.html`).
 - **Backend:** Flask REST API (`ui/app.py`), connects to Hugging Face model via Inference API.
 - **Features:** Chat interface, performance prediction, MarAcademy info, student support.
@@ -159,6 +161,15 @@ curl -X POST "https://api.ngaagenticflow.agency/omar/own/chatbot/" \
 │   └── pretrain_corpus.txt
 ├── models
 │   └── gpt2-finetuned-maracademy
+│       ├── checkpoint-[...]
+│       ├── config.json
+│       ├── generation_config.json
+│       ├── merges.txt
+│       ├── model.safetensors
+│       ├── special_tokens_map.json
+│       ├── tokenizer_config.json
+│       ├── tokenizer.json
+│       └── vocab.json
 ├── notebook
 │   └── noteboo.ipynb
 ├── requirements.txt
@@ -174,7 +185,7 @@ curl -X POST "https://api.ngaagenticflow.agency/omar/own/chatbot/" \
 ├── ui
 │   ├── app.py      # Flask backend
 │   └── templates
-│       └── index.html  
+│       └── index.html  # HTML/Tailwind frontend
 ├── report
 │   └── LAPS_Project_Report.pdf
 ├── preprocessing.md
@@ -212,7 +223,7 @@ This README and project directly address all rubric criteria:
 - **UI:** HTML/Tailwind frontend, Flask backend, clear instructions.
 - **Code Quality:** Modular, commented, documented.
 - **Demo:** Comprehensive video showcasing all aspects.
-- **Deployment:** Hosted model, public API endpoint.
+- **Deployment:** Hosted model, public API endpoint, and [Live Demo UI](https://api.ngaagenticflow.agency/omar/own/chatbot/).
 - **Documentation:** All steps from data to deployment covered.
 
 See `report/LAPS_Project_Report.pdf` for details.
