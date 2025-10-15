@@ -196,7 +196,7 @@ curl -X POST "https://api.ngaagenticflow.agency/omar/own/chatbot/api/chat" \
 
 ## References
 
-- [MarAcademy Website](https://maracademy.com)
+- [MarAcademy Website](https://maracademy.org)
 - [Omar-keita/gpt2-finetuned-maracademy on Hugging Face](https://huggingface.co/Omar-keita/gpt2-finetuned-maracademy)
 - [Hugging Face Transformers Documentation](https://huggingface.co/docs/transformers/index)
 - [GPT-2 Paper](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf)
