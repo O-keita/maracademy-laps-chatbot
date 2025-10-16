@@ -28,4 +28,4 @@ EXPOSE 5000
 ENV FLASK_APP=ui/app.py
 
 # Run Flask app
-CMD ["flask", "run", "--host=0.0.0.0", "--port=5000"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "ui.app:app"]
