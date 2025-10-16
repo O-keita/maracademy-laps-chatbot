@@ -1,6 +1,7 @@
+torch==2.2.0+cpu --index-url https://download.pytorch.org/whl/cpu
 transformers
-tensorflow
 streamlit
+tensorflow
 flask
 fastapi
 uvicorn
@@ -9,5 +10,3 @@ pandas
 numpy
 nltk
 gunicorn
-uvicorn
-torch
