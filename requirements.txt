@@ -10,3 +10,4 @@ pandas
 numpy
 nltk
 gunicorn
+streamlit-chat
