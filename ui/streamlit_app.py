@@ -1,17 +1,18 @@
 import streamlit as st
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from transformers import T5Tokenizer, T5ForConditionalGeneration
 import torch
+import re
 from datetime import datetime
 
 # Page configuration
 st.set_page_config(
-    page_title="MarAcademy Chatbot",
-    page_icon="🎓",
+    page_title="Customer Support Chatbot",
+    page_icon="🤖",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# Custom CSS for modern dark theme
+# Custom CSS with MarAcademy colors (Indigo/Dark Blue theme)
 st.markdown("""
     <style>
     * {
@@ -25,31 +26,28 @@ st.markdown("""
         color: #e0e0e0;
     }
     
-    [data-testid="stChatMessageContainer"] {
-        background: transparent;
-    }
-    
-    .stChatMessage {
+    [data-testid="stMain"] {
         background: transparent;
     }
     
     .chat-container {
-        max-width: 900px;
+        max-width: 800px;
         margin: 0 auto;
-        padding: 2rem;
+        padding: 2rem 1rem;
     }
     
     .header-section {
         text-align: center;
-        margin-bottom: 3rem;
+        margin-bottom: 2rem;
         padding: 2rem 0;
+        animation: fadeIn 0.6s ease-in;
     }
     
     .header-section h1 {
-        font-size: 3rem;
+        font-size: 2.5rem;
         font-weight: 700;
         color: #ffffff;
-        margin-bottom: 1rem;
+        margin-bottom: 0.5rem;
         background: linear-gradient(135deg, #4f46e5 0%, #818cf8 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -57,8 +55,53 @@ st.markdown("""
     }
     
     .header-section p {
-        font-size: 1.1rem;
+        font-size: 1rem;
         color: #a0a0a0;
+    }
+    
+    .messages-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 120px;
+        animation: slideUp 0.5s ease-out;
+    }
+    
+    .message-wrapper {
+        display: flex;
+        margin: 1rem 0;
+        animation: messagePop 0.3s ease-out;
+    }
+    
+    .message-wrapper.user {
+        justify-content: flex-end;
+    }
+    
+    .message-wrapper.bot {
+        justify-content: flex-start;
+    }
+    
+    .message-bubble {
+        max-width: 70%;
+        padding: 1rem 1.5rem;
+        border-radius: 1.25rem;
+        word-wrap: break-word;
+    }
+    
+    .message-bubble.user {
+        background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+        color: white;
+        border-top-right-radius: 0.25rem;
+        box-shadow: 0 4px 20px rgba(79, 70, 229, 0.3);
+    }
+    
+    .message-bubble.bot {
+        background: rgba(30, 41, 59, 0.6);
+        border: 1px solid rgba(79, 70, 229, 0.2);
+        color: #e0e0e0;
+        border-top-left-radius: 0.25rem;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
     
     .input-section {
@@ -66,47 +109,24 @@ st.markdown("""
         bottom: 0;
         left: 0;
         right: 0;
-        background: rgba(15, 23, 42, 0.95);
-        backdrop-filter: blur(10px);
+        background: rgba(15, 23, 42, 0.98);
+        backdrop-filter: blur(20px);
         border-top: 1px solid rgba(79, 70, 229, 0.2);
         padding: 1.5rem;
         z-index: 100;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
     }
     
-    .message-user {
+    .input-container {
+        max-width: 800px;
+        margin: 0 auto;
         display: flex;
-        justify-content: flex-end;
-        margin: 1rem 0;
-    }
-    
-    .message-user .stChatMessage {
-        background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
-        border-radius: 1.25rem;
-        border-top-right-radius: 0.25rem;
-        padding: 1rem 1.5rem;
-        max-width: 70%;
-        box-shadow: 0 4px 20px rgba(79, 70, 229, 0.3);
-    }
-    
-    .message-bot {
-        display: flex;
-        justify-content: flex-start;
-        margin: 1rem 0;
-    }
-    
-    .message-bot .stChatMessage {
-        background: rgba(30, 41, 59, 0.6);
-        border: 1px solid rgba(79, 70, 229, 0.2);
-        border-radius: 1.25rem;
-        border-top-left-radius: 0.25rem;
-        padding: 1rem 1.5rem;
-        max-width: 70%;
-        backdrop-filter: blur(10px);
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        gap: 1rem;
+        align-items: flex-end;
     }
     
     .stTextInput {
-        margin-bottom: 2rem;
+        flex: 1;
     }
     
     .stTextInput input {
@@ -121,11 +141,15 @@ st.markdown("""
     
     .stTextInput input:focus {
         border: 1px solid rgba(79, 70, 229, 0.6) !important;
-        box-shadow: 0 0 20px rgba(79, 70, 229, 0.3) !important;
+        box-shadow: 0 0 20px rgba(79, 70, 229, 0.4) !important;
     }
     
     .stTextInput input::placeholder {
         color: #808080 !important;
+    }
+    
+    .stButton {
+        flex-shrink: 0;
     }
     
     .stButton button {
@@ -133,10 +157,12 @@ st.markdown("""
         color: white !important;
         border: none !important;
         border-radius: 1rem !important;
-        padding: 0.75rem 2rem !important;
+        padding: 0.6rem 2rem !important;
         font-weight: 600 !important;
+        font-size: 1rem !important;
         box-shadow: 0 0 20px rgba(79, 70, 229, 0.3) !important;
         transition: all 0.3s ease !important;
+        min-width: 80px;
     }
     
     .stButton button:hover {
@@ -145,100 +171,160 @@ st.markdown("""
         transform: translateY(-2px) !important;
     }
     
-    .topic-card {
-        background: rgba(30, 41, 59, 0.5);
-        border: 1px solid rgba(79, 70, 229, 0.2);
-        border-radius: 1rem;
-        padding: 1.5rem;
-        margin: 1rem 0;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        backdrop-filter: blur(10px);
-    }
-    
-    .topic-card:hover {
-        background: rgba(30, 41, 59, 0.8);
-        border-color: rgba(79, 70, 229, 0.5);
-        transform: translateY(-4px);
-        box-shadow: 0 8px 20px rgba(79, 70, 229, 0.2);
-    }
-    
-    .topic-card h3 {
-        color: #4f46e5;
-        margin-bottom: 0.5rem;
-    }
-    
-    .topic-card p {
-        color: #a0a0a0;
-        font-size: 0.9rem;
-    }
-    
-    .stats-container {
-        display: flex;
-        gap: 1rem;
-        margin: 2rem 0;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    
-    .stat-box {
+    .welcome-card {
         background: rgba(79, 70, 229, 0.1);
         border: 1px solid rgba(79, 70, 229, 0.2);
-        border-radius: 1rem;
-        padding: 1rem;
+        border-radius: 1.5rem;
+        padding: 2rem;
         text-align: center;
-        flex: 1;
-        min-width: 150px;
         backdrop-filter: blur(10px);
+        margin: 2rem 0;
     }
     
-    .stat-number {
-        font-size: 2rem;
-        font-weight: 700;
+    .welcome-card h2 {
         color: #4f46e5;
+        margin-bottom: 1rem;
     }
     
-    .stat-label {
+    .welcome-card p {
         color: #a0a0a0;
-        font-size: 0.9rem;
-        margin-top: 0.5rem;
+        line-height: 1.6;
     }
     
-    [data-testid="stChatMessageContent"] {
-        background: transparent;
+    .typing-indicator {
+        display: flex;
+        gap: 0.5rem;
+        padding: 1rem 1.5rem;
+    }
+    
+    .typing-dot {
+        width: 0.5rem;
+        height: 0.5rem;
+        background: #808080;
+        border-radius: 50%;
+        animation: typing 1.4s infinite;
+    }
+    
+    .typing-dot:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+    
+    .typing-dot:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+    
+    @keyframes typing {
+        0%, 60%, 100% {
+            transform: translateY(0);
+        }
+        30% {
+            transform: translateY(-10px);
+        }
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideUp {
+        from {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes messagePop {
+        0% {
+            opacity: 0;
+            transform: scale(0.8) translateY(10px);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .header-section h1 {
+            font-size: 1.8rem;
+        }
+        
+        .message-bubble {
+            max-width: 85%;
+            padding: 0.75rem 1rem;
+        }
+        
+        .input-container {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .stButton button {
+            width: 100%;
+        }
     }
     </style>
 """, unsafe_allow_html=True)
 
-# Load fine-tuned model and tokenizer
+# Load model and tokenizer
 @st.cache_resource
 def load_model():
-    MODEL_NAME = "Omar-keita/gpt2-finetuned-maracademy"
-    tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
-    model = AutoModelForCausalLM.from_pretrained(MODEL_NAME)
+    MODEL_NAME = "Umutoniwasepie/final_model"
+    tokenizer = T5Tokenizer.from_pretrained(MODEL_NAME)
+    model = T5ForConditionalGeneration.from_pretrained(MODEL_NAME)
     return tokenizer, model
 
 tokenizer, model = load_model()
 
-def ask_bot(question, max_length=60):
-    prompt = f"User: {question}\nBot:"
-    input_ids = tokenizer.encode(prompt, return_tensors="pt")
-    output = model.generate(
-        input_ids,
-        max_length=input_ids.shape[1] + max_length,
-        pad_token_id=tokenizer.eos_token_id,
-        do_sample=True,
-        top_k=30,
-        top_p=0.9,
-        temperature=0.8,
-        num_return_sequences=1,
-        eos_token_id=tokenizer.eos_token_id
-    )
-    response = tokenizer.decode(output[0], skip_special_tokens=True)
-    if "Bot:" in response:
-        answer = response.split("Bot:")[1].split("User:")[0].strip()
-        return answer
-    return response
+def normalize_input(text):
+    text = text.lower().strip()
+    text = re.sub(r'\s+', ' ', text)
+    text = re.sub(r'[^\w\s\?.,!]', '', text)
+    return text
+
+def capitalize_response(response):
+    sentences = response.split(". ")
+    unique_sentences = []
+    for s in sentences:
+        if s and s not in unique_sentences:
+            unique_sentences.append(s.capitalize())
+    return ". ".join(unique_sentences)
+
+def test_query(query):
+    query_lower = normalize_input(query)
+    input_text = f"{query_lower}"
+    input_ids = tokenizer(
+        input_text,
+        return_tensors="pt",
+        truncation=True,
+        padding="max_length",
+        max_length=128
+    ).input_ids
+    
+    with torch.no_grad():
+        output_ids = model.generate(
+            input_ids,
+            max_length=200,
+            temperature=0.8,
+            top_k=70,
+            repetition_penalty=1.5
+        )
+    
+    response = tokenizer.decode(output_ids[0], skip_special_tokens=True)
+    
+    if not response.strip():
+        response = "I'm sorry, I didn't understand that. Could you please rephrase?"
+    
+    return capitalize_response(response)
 
 # Initialize session state
 if "conversation" not in st.session_state:
@@ -246,88 +332,96 @@ if "conversation" not in st.session_state:
 if "show_welcome" not in st.session_state:
     st.session_state.show_welcome = True
 
-# Main container
+# Main layout
 with st.container():
-    # Welcome section
+    st.markdown("<div class='chat-container'>", unsafe_allow_html=True)
+    
+    # Header
     if st.session_state.show_welcome and len(st.session_state.conversation) == 0:
         st.markdown("""
             <div class="header-section">
-                <h1>🎓 Welcome to MarAcademy</h1>
-                <p>Your personal computer science learning assistant</p>
+                <h1>🤖 Customer Support</h1>
+                <p>Your AI-powered customer support assistant</p>
             </div>
         """, unsafe_allow_html=True)
         
-        # Statistics
         st.markdown("""
-            <div class="stats-container">
-                <div class="stat-box">
-                    <div class="stat-number">1000+</div>
-                    <div class="stat-label">Topics Covered</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-number">24/7</div>
-                    <div class="stat-label">Available</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-number">AI</div>
-                    <div class="stat-label">Powered</div>
-                </div>
+            <div class="welcome-card">
+                <h2>Welcome! 👋</h2>
+                <p>Ask me any customer support-related questions. I'm here to help! 
+                <br><br><em style="color: #818cf8;">Note: I'm still learning, so I do have my limits.</em></p>
             </div>
         """, unsafe_allow_html=True)
-        
-        st.markdown("### Quick Topics")
-        col1, col2 = st.columns(2)
-        
-        with col1:
-            st.markdown("""
-                <div class="topic-card">
-                    <h3>💻 Programming</h3>
-                    <p>Learn coding concepts and best practices</p>
-                </div>
-            """, unsafe_allow_html=True)
-        
-        with col2:
-            st.markdown("""
-                <div class="topic-card">
-                    <h3>🔍 Algorithms</h3>
-                    <p>Master problem solving and optimization</p>
-                </div>
-            """, unsafe_allow_html=True)
+    else:
+        st.markdown("""
+            <div class="header-section" style="padding: 1rem 0; margin-bottom: 1rem;">
+                <h1 style="font-size: 2rem;">🤖 Customer Support</h1>
+            </div>
+        """, unsafe_allow_html=True)
     
-    # Chat history
+    # Messages container
+    st.markdown("<div class='messages-container'>", unsafe_allow_html=True)
+    
     if len(st.session_state.conversation) > 0:
         st.session_state.show_welcome = False
+        for i, (role, message) in enumerate(st.session_state.conversation):
+            if role == "user":
+                st.markdown(f"""
+                    <div class="message-wrapper user">
+                        <div class="message-bubble user">{message}</div>
+                    </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.markdown(f"""
+                    <div class="message-wrapper bot">
+                        <div class="message-bubble bot">{message}</div>
+                    </div>
+                """, unsafe_allow_html=True)
     
-    for role, message in st.session_state.conversation:
-        with st.chat_message(role, avatar="🤖" if role == "assistant" else "👤"):
-            st.markdown(message)
+    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
-# Input section - Fixed at bottom
-st.markdown("<div class='input-section'>", unsafe_allow_html=True)
+# Fixed input section at bottom
+st.markdown("""
+    <div class="input-section">
+        <div class="input-container">
+""", unsafe_allow_html=True)
 
-col1, col2 = st.columns([5, 1])
+col_input, col_button = st.columns([4, 1])
 
-with col1:
+with col_input:
     user_input = st.text_input(
-        "Your question:",
-        placeholder="Ask me anything about CS, MarAcademy, mentorship...",
-        label_visibility="collapsed"
+        "You:",
+        placeholder="Ask your question here...",
+        label_visibility="collapsed",
+        key="user_input_field"
     )
 
-with col2:
-    send_button = st.button("Send", use_container_width=True)
+with col_button:
+    send_clicked = st.button("Send", use_container_width=True, key="send_button")
 
-st.markdown("</div>", unsafe_allow_html=True)
+st.markdown("""
+        </div>
+    </div>
+""", unsafe_allow_html=True)
 
-# Add padding to prevent content from being hidden behind fixed input
-st.markdown("<div style='height: 120px;'></div>", unsafe_allow_html=True)
+# Add spacing to prevent overlap with fixed input
+st.markdown("<div style='height: 100px;'></div>", unsafe_allow_html=True)
 
 # Process message
-if send_button and user_input:
+if send_clicked and user_input.strip():
+    # Add user message
     st.session_state.conversation.append(("user", user_input))
     
+    # Show loading state
     with st.spinner(""):
-        bot_response = ask_bot(user_input)
+        response = test_query(user_input)
     
-    st.session_state.conversation.append(("assistant", bot_response))
+    # Add bot response
+    st.session_state.conversation.append(("bot", response))
+    
+    # Clear input and rerun
     st.rerun()
+
+elif send_clicked and not user_input.strip():
+    st.warning("Please enter a valid question.")
