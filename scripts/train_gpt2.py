@@ -47,11 +47,11 @@ trainer = Trainer(
 # Train the model
 trainer.train()
 
-# Evaluate and calculate perplexity
-eval_results = trainer.evaluate()
-eval_loss = eval_results["eval_loss"]
-perplexity = math.exp(eval_loss)
-print(f"Perplexity: {perplexity:.2f}")
+# # Evaluate and calculate perplexity
+# eval_results = trainer.evaluate()
+# eval_loss = eval_results["eval_loss"]
+# perplexity = math.exp(eval_loss)
+# print(f"Perplexity: {perplexity:.2f}")
 
 # Save the fine-tuned model and tokenizer
 model.save_pretrained(gpt2_finetuned_maracademy)
