@@ -1,233 +1,147 @@
-# MarAcademy Learning Analytics & Personalization Chatbot
+# MarAcademy Computer Science Assistant (Chatbot)
 
 ---
 
 ## Table of Contents
-- [Overview](#overview)
-- [Project Definition & Domain Alignment](#project-definition--domain-alignment)
+- [Introduction](#introduction)
 - [Dataset Collection & Preprocessing](#dataset-collection--preprocessing)
-- [Model Fine-tuning](#model-fine-tuning)
-- [Performance Metrics](#performance-metrics)
-- [Performance Table](#performance-table)
-- [User Interface (UI) Integration](#user-interface-ui-integration)
-- [Code Quality & Documentation](#code-quality--documentation)
-- [Deployment & API Access](#deployment--api-access)
-- [Demo Video](#demo-video)
+- [Model Selection & Fine-Tuning](#model-selection--fine-tuning)
+- [Performance Evaluation](#performance-evaluation)
+- [UI Integration & Functionality](#ui-integration--functionality)
+- [Conclusion](#conclusion)
+- [Future Improvements](#future-improvements)
 - [Quickstart](#quickstart)
-- [Project Structure](#project-structure)
+- [Project Links](#project-links)
 - [References](#references)
-- [Authors](#authors)
-- [Assignment Rubric Alignment](#assignment-rubric-alignment)
 
 ---
 
-## Overview
+## Introduction
 
-The MarAcademy Chatbot is a domain-specific conversational AI assistant designed to support students with computer science, MarAcademy program inquiries, learning analytics, performance predictions, and personalized recommendations. The chatbot leverages a GPT-2 model fine-tuned on MarAcademy and computer science data, hosted on Hugging Face. It is accessible via a Flask REST API (with an HTML/Tailwind frontend) and a Streamlit-based UI. The system provides accurate, context-aware answers to both academic and institutional questions, enhancing learner engagement and resource accessibility.
+In the era of digital transformation, personalized learning and actionable analytics are revolutionizing education, making individualized support and guidance more accessible than ever. MarAcademy, with its mission to bridge the gap between ambition and opportunity, is committed to empowering learners through expertly designed courses, hands-on mentorship, and fully funded scholarships in the tech domain.
 
----
+This project presents the development of a domain-specific chatbot for MarAcademy, designed to assist students with computer science queries, program information, learning analytics, and personalized recommendations. Leveraging the power of Transformer-based models, specifically a fine-tuned GPT-2, the chatbot delivers context-aware, natural language responses tailored to the unique needs of MarAcademy’s student community.
 
-## Project Definition & Domain Alignment
-
-- **Domain:** Education, Computer Science, MarAcademy.
-- **Purpose:** Deliver instant, intelligent answers to questions about computer science, learning analytics, MarAcademy programs, scholarships, and mentorship.
-- **Justification:** Aligned with MarAcademy's mission to democratize high-quality technology education and provide actionable guidance for learners.
+By automating responses to both academic and institutional questions, the MarAcademy chatbot enhances learner engagement, provides timely support, and contributes to a better educational experience.
 
 ---
 
 ## Dataset Collection & Preprocessing
 
 ### Data Sources
-- Q&A pairs from diverse sources:
-  - Computer science theory dataset (Kaggle).
-  - MarAcademy resources (`maracademy.json`, `computer_science.json`, `data_science.json`).
-- All data unified into `conversations_combined.csv` for training.
+To ensure the MarAcademy chatbot delivers accurate, comprehensive, and context-aware answers to students, the project leveraged multiple high-quality, domain-specific datasets:
+- **Computer Science Theory QA Dataset**: Covers hardware/software concepts, data structures, algorithms, and more (sourced from Kaggle).
+- **MarAcademy Resources**: Custom datasets (`maracademy.json`, `computer_science.json`, `data_science.json`) include curated information about MarAcademy’s mission, vision, courses, scholarships, and mentorship.
 
 ### Preprocessing Steps
 - **Duplicate Removal:** Ensures data diversity.
-- **Null & Short Entry Filtering:** Cleans out empty or trivial Q&A pairs.
-- **Text Normalization:** Lowercase, trimmed, normalized whitespace.
-- **Tokenization:** GPT-2 Byte-Pair Encoding (BPE) via Hugging Face Transformers.
-- **Final Clean Data:** Saved as `conversations_clean.csv`.
+- **Handling Missing Values:** Short or incomplete Q&A pairs were removed.
+- **Text Normalization:** Converted text to lowercase, trimmed whitespace.
+- **Tokenization:** Used GPT-2 Byte-Pair Encoding (BPE) tokenizer.
 
-### Documentation
-- All data preparation steps are clearly commented in `scripts/preprocess.py`.
-- Summary and rationale in `preprocessing.md`.
+The cleaned data was saved as `conversations_clean.csv` for downstream model training.
 
 ---
 
-## Model Fine-tuning
+## Model Selection & Fine-Tuning
 
-- **Model:** GPT-2 (generative Q&A); T5 (for classification/analytics tasks).
-- **Training:** Fine-tuned on MarAcademy’s unified domain-specific corpus (`pretrain_corpus.txt`).
-- **Hyperparameters:** Epochs, batch size, learning rate, and block size systematically adjusted.
-- **Experiments:** Multiple runs tracked in `notebook/noteboo.ipynb` and `report/LAPS_Project_Report.pdf`.
-- **Model Hosting:**  
-  - Final model: [Omar-keita/gpt2-finetuned-maracademy](https://huggingface.co/Omar-keita/gpt2-finetuned-maracademy)  
-  - Both Flask backend and Streamlit UI load the model directly from Hugging Face for real-time inference.
+### Model Selection
+- **Architecture:** GPT-2 Transformer model.
+- **Advantages:** Robust generative capabilities, context-aware responses for both technical and institutional queries.
 
----
+### Fine-Tuning
+- Fine-tuned on a combined dataset of theoretical computer science Q&A and MarAcademy-specific resources.
+- **Hyperparameters Tuned:**
+  - Epochs: Increased gradually to enhance generalization while avoiding overfitting.
+  - Learning Rate: Adjusted to balance stability and speed.
+  - Batch Size: Configured based on GPU availability.
 
-## Performance Metrics
-
-- **Automatic:** BLEU (response quality), F1-score (classification), Perplexity (fluency).
-- **Qualitative:** Manual conversation reviews and user feedback.
-- **Evaluation:** Comprehensive analysis in notebook and report.
-
----
-
-## Performance Table
-
-| Model Version                   | BLEU Score | F1 Score | Perplexity | Qualitative Comments                                      |
-|----------------------------------|:----------:|:--------:|:----------:|----------------------------------------------------------|
-| GPT-2 baseline                   |   0.21     |   0.62   |   34.1     | Answers generic, limited domain knowledge                 |
-| GPT-2 finetuned (epoch 10)       |   0.34     |   0.78   |   20.4     | Improved, more relevant responses to MarAcademy questions |
-| GPT-2 finetuned (epoch 20, best) |   0.41     |   0.86   |   17.9     | Highly contextual, accurate, personalized answers         |
-| T5 finetuned (classification)    |   0.39     |   0.89   |     —      | Accurate performance predictions, clear category mapping  |
-
-_Metrics reflect test set and real user interaction. See notebook and report for detail._
+### Results
+- **Best Model:** GPT-2 (20 epochs, final checkpoint).
+- **Deployment:** DistilGPT2 selected due to lower memory usage and real-time inference capabilities.
 
 ---
 
-## User Interface (UI) Integration
+## Performance Evaluation
 
-- **Streamlit UI:** [https://maracademy-laps-chatbot.streamlit.app/](https://maracademy-laps-chatbot.streamlit.app/)  
-  Loads the Hugging Face GPT-2 model live in the cloud for rapid prototyping and direct user engagement.
-- **Custom HTML/Tailwind UI:** [Live Chatbot UI](https://api.ngaagenticflow.agency/omar/own/chatbot/)  
-  Powered by a Flask backend, this interface provides a production-ready web experience, also loading the model from Hugging Face.
-- **Backend:** Flask REST API (`ui/app.py`) connects both UIs to the Hugging Face model using the Inference API.
-- **Features:** Chat interface, learning analytics, personalized support, performance prediction, MarAcademy information.
-- **Out-of-Domain Handling:** Both UIs use prompt engineering and response checking; future releases will further improve OOD detection.
-- **Instructions:** Clear guidance and sample queries provided in each UI.
+### Quantitative Metrics
+| Model Version       | Epochs | Training Loss | Perplexity |
+|---------------------|:------:|:-------------:|:----------:|
+| GPT-2 (baseline)    |   3    |     1.80      |    6.05    |
+| GPT-2 (mid)         |  10    |     0.40      |    1.49    |
+| GPT-2 (final)       |  20    |    0.187      |    1.21    |
+| DistilGPT2 (final)  |  20    |    0.785      |    2.19    |
 
----
-
-## Code Quality & Documentation
-
-- **Modular structure:**  
-  `src/`, `data/`, `ui/`, `notebook/`, `report/`, `scripts/`, `test/`
-- **Code:** Well-commented, organized, and uses clear naming conventions.
-- **Documentation:** All scripts and modules are documented. See `README.md`, `preprocessing.md`, and in-code comments.
+### Qualitative Testing
+- **Example Queries:**
+  - Q: "Explain the difference between a stack and a queue."
+    - A: "A stack follows Last-In-First-Out (LIFO), while a queue follows First-In-First-Out (FIFO)."
+  - Q: "What scholarships does MarAcademy offer?"
+    - A: "MarAcademy provides fully-funded scholarships to ensure education is accessible to everyone, in partnership with initiatives such as DataCamp Donates."
 
 ---
 
-## Deployment & API Access
+## UI Integration & Functionality
 
-- **Model Hosting:** Hugging Face Inference API.
-- **Model Card:** [Omar-keita/gpt2-finetuned-maracademy](https://huggingface.co/Omar-keita/gpt2-finetuned-maracademy)
-- **API Endpoint:**  
-  [https://api.ngaagenticflow.agency/omar/own/chatbot/api/chat](https://api.ngaagenticflow.agency/omar/own/chatbot/api/chat)
-- **Usage Example:**
-  ```bash
-  curl -X POST "https://api.ngaagenticflow.agency/omar/own/chatbot/api/chat" \
-    -H "Content-Type: application/json" \
-    -d '{"inputs": "What scholarships does MarAcademy offer?"}'
-  ```
-- **System Architecture:**  
-  Both the Flask backend and Streamlit UI load the model directly from Hugging Face, ensuring consistent answers and centralized updates.
+### Deployment
+- **Streamlit App:** [https://maracademy-laps-chatbot.streamlit.app/](https://maracademy-laps-chatbot.streamlit.app/)
+- **Custom Flask/Tailwind Server:** [https://api.ngaagenticflow.agency/omar/own/chatbot/](https://api.ngaagenticflow.agency/omar/own/chatbot/)
+
+Both UIs access the centralized fine-tuned GPT-2 model hosted on Hugging Face Hub.
+
+### Features
+- Real-time Q&A.
+- Seamless integration of both institutional and technical queries.
+- Out-of-domain handling via prompt engineering.
 
 ---
 
-## Demo Video
+## Conclusion
 
-- [Demo Video Link](#)  
-  *(Link will be updated after recording)*
-- The demo covers chatbot features, API usage, UI walkthrough, and key code explanations.
+The MarAcademy chatbot exemplifies a robust, flexible approach to deploying transformer-based conversational AI by leveraging a fine-tuned GPT-2 model. Both the Streamlit and Flask/Tailwind interfaces guarantee a consistent, high-quality user experience, enabling MarAcademy to provide accessible, personalized support to its learners.
+
+---
+
+## Future Improvements
+1. **Advanced Out-of-Domain Handling:** Incorporate intent classification models to handle out-of-domain queries more effectively.
+2. **Scalability:** Migrate to autoscaling cloud infrastructure for higher concurrent user loads.
+3. **Multi-turn Contextual Memory:** Enable the chatbot to remember context across multiple exchanges.
+4. **Model Optimization:** Apply quantization for faster inference and reduced memory usage.
+5. **Continuous Learning:** Adapt to evolving user needs via periodic re-training.
 
 ---
 
 ## Quickstart
 
 ```bash
+# Clone the repository
+git clone https://github.com/O-keita/maracademy-laps-chatbot.git
+cd maracademy-laps-chatbot
+
+# Create and activate a virtual environment
+python3 -m venv .venv
+source .venv/bin/activate  # macOS/Linux
+.venv\Scripts\Activate.ps1  # Windows
+
+# Install dependencies
 pip install -r requirements.txt
-python scripts/preprocess.py
-python scripts/train_gpt2.py
-python -m flask run
-# Visit the HTML UI in your browser, or use API:
-curl -X POST "https://api.ngaagenticflow.agency/omar/own/chatbot/api/chat" \
-  -H "Content-Type: application/json" \
-  -d '{"inputs": "Tell me about MarAcademy mentorship."}'
+
+# Run the Streamlit app locally
+streamlit run ui/app.py
 ```
 
 ---
 
-## Project Structure
+## Project Links
 
-```
-├── data
-│   ├── cached_lm_GPT2TokenizerFast_128_pretrain_corpus.txt
-│   ├── cached_lm_GPT2TokenizerFast_128_pretrain_corpus.txt.lock
-│   ├── computer_science.json
-│   ├── conversations_clean.csv
-│   ├── conversations_combined.csv
-│   ├── data_science.json
-│   ├── maracademy.json
-│   └── pretrain_corpus.txt
-├── models
-│   └── gpt2-finetuned-maracademy
-│       ├── checkpoint-[...]
-│       ├── config.json
-│       ├── generation_config.json
-│       ├── merges.txt
-│       ├── model.safetensors
-│       ├── special_tokens_map.json
-│       ├── tokenizer_config.json
-│       ├── tokenizer.json
-│       └── vocab.json
-├── notebook
-│   └── noteboo.ipynb
-├── requirements.txt
-├── scripts
-│   ├── csv_pretrained.py
-│   ├── delpoy_to_hugging_face.py
-│   ├── json_to_csv.py
-│   ├── preprocess.py
-│   └── train_gpt2.py
-├── src
-├── test
-│   └── inferbot.py
-├── ui
-│   ├── app.py      # Flask backend
-│   └── templates
-│       └── index.html  # HTML/Tailwind frontend
-├── report
-│   └── LAPS_Project_Report.pdf
-├── preprocessing.md
-├── README.md
-```
+- **GitHub Repo:** [https://github.com/O-keita/maracademy-laps-chatbot](https://github.com/O-keita/maracademy-laps-chatbot)
+- **Hugging Face Model:** [https://huggingface.co/Omar-keita/gpt2-finetuned-maracademy](https://huggingface.co/Omar-keita/gpt2-finetuned-maracademy)
+- **Video Demo:** [https://youtu.be/8wvi2IuvipQ](https://youtu.be/8wvi2IuvipQ)
 
 ---
 
 ## References
 
-- [MarAcademy Website](https://maracademy.org)
-- [Omar-keita/gpt2-finetuned-maracademy on Hugging Face](https://huggingface.co/Omar-keita/gpt2-finetuned-maracademy)
-- [Hugging Face Transformers Documentation](https://huggingface.co/docs/transformers/index)
-- [GPT-2 Paper](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf)
-- [Flask Documentation](https://flask.palletsprojects.com/)
-- [Tailwind CSS Documentation](https://tailwindcss.com/)
-
----
-
-## Authors
-
-- **Omar Keita**, MarAcademy
-
----
-
-## Assignment Rubric Alignment
-
-This README and the project directly address all rubric criteria:
-
-- **Domain Alignment:** Focused on MarAcademy/computer science and authentic student needs.
-- **Dataset & Preprocessing:** Domain-specific, cleaned, tokenized, and documented.
-- **Model Fine-tuning:** Tuning, experiments, and results documented.
-- **Performance Metrics:** BLEU, F1, perplexity, and qualitative analysis.
-- **Performance Table:** Included for clarity and comparison.
-- **UI:** HTML/Tailwind frontend and Streamlit UI, Flask backend, clear instructions.
-- **Code Quality:** Modular, commented, documented.
-- **Demo:** Comprehensive video showcasing all aspects.
-- **Deployment:** Hosted model, public API endpoint, and [Live Demo UI](https://api.ngaagenticflow.agency/omar/own/chatbot/).
-- **Documentation:** All steps from data to deployment covered.
-
-See `report/LAPS_Project_Report.pdf` for implementation and analysis details.
+1. OpenAI Community. (n.d.). GPT-2. Hugging Face. Retrieved October 16, 2025, from [https://huggingface.co/openai-community/gpt2](https://huggingface.co/openai-community/gpt2)
+2. Hugging Face. (n.d.). Hugging Face Hub documentation. Retrieved October 16, 2025, from [https://huggingface.co/docs/hub/en/index](https://huggingface.co/docs/hub/en/index)
+3. MarAcademy. (n.d.). MarAcademy – Empowering learners through technology education. Retrieved October 16, 2025, from [https://maracademy.org](https://maracademy.org)
